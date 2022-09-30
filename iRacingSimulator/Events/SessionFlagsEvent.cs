@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using iRacingSdkWrapper.Bitfields;
+//using iRacingSdkWrapper.Bitfields;
 using iRacingSdkWrapper;
 
 namespace iRCC.iRacingSimulator.Events

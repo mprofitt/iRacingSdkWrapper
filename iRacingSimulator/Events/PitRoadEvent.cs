@@ -15,7 +15,7 @@ namespace iRCC.iRacingSimulator.Events
             this.Time = DateTime.UtcNow;
         }
         public PitAction Type { get; set; }
-        public Driver? Driver { get; set; }
+        public Driver Driver { get; set; }
         public DateTime Time { get; set; }
     }
 }

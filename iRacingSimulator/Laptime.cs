@@ -118,10 +118,10 @@ namespace iRacingSimulator
         public Laptime Laptime { get; private set; }
 
         public int DriverId { get; set; }
-        public string? DriverName { get; set; }
-        public string? DriverNumber { get; set; }
+        public string DriverName { get; set; }
+        public string DriverNumber { get; set; }
         public int DriverTeamId { get; set; }
-        public string? DriverTeamName { get; set; }
+        public string DriverTeamName { get; set; }
 
         public static BestLap Default
         {

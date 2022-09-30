@@ -16,7 +16,7 @@ namespace iRCC.iRacingSimulator.Events
         }
 
         public PaceFlags Type { get; set; }
-        public Driver? Driver { get; set; }
+        public Driver Driver { get; set; }
         public DateTime Time { get; set; }   
         public int SessionTick { get; set; }
         public double SessionTime { get; set; }

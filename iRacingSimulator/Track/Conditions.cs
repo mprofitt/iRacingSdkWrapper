@@ -38,16 +38,16 @@ namespace iRacingSimulator
         public static float WindDir { get; private set;}
         public static float WindVel { get; private set; }
         public static int Skies { get; private set; }
-        private static string? _sessionTrackRubberState;
+        private static string _sessionTrackRubberState;
         private static TrackUsageTypes? _trackUsage;
 
-        public static string? SessionTrackRubberState
+        public static string SessionTrackRubberState
         {
             get { return _sessionTrackRubberState; }
             set
             {
-                _sessionTrackRubberState = value!;
-                TrackUsage = TrackUsageFromString(value!);
+                _sessionTrackRubberState = value;
+                TrackUsage = TrackUsageFromString(value);
             }
         }
 

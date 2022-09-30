@@ -5,7 +5,6 @@ using System.Linq;
 using iRacingSdkWrapper;
 using iRacingSdkWrapper.Bitfields;
 using iRacingSimulator.Drivers;
-using NAudio.MediaFoundation;
 
 namespace iRacingSimulator
 {
@@ -17,8 +16,8 @@ namespace iRacingSimulator
         }
 
         public Track Track { get; set; }
-        public string? EventType { get; set; }
-        public string? SessionType { get; set; }
+        public string EventType { get; set; }
+        public string SessionType { get; set; }
         public int SubsessionId { get; set; }
 
         public double SessionTime { get; set; }
@@ -31,13 +30,13 @@ namespace iRacingSimulator
         public bool TrackCleanup { get; set; }
         public bool DynamicTrack { get; set; }
         public Conditions.TrackUsageTypes? TrackUsage { get; set; }
-        public string? TrackUsageText { get; set; }
+        public string TrackUsageText { get; set; }
 
-        public string? RaceLaps { get; set; }
+        public string RaceLaps { get; set; }
         public double RaceTime { get; set; }
 
         public Dictionary<int, BestLap> ClassBestLaps { get; set; }
-        public BestLap? OverallBestLap { get; set; }
+        public BestLap OverallBestLap { get; set; }
 
         public iRacingSdkWrapper.SessionFlags Flags { get; set; } = iRacingSdkWrapper.SessionFlags.Caution;
         public SessionStates State { get; set; }
@@ -61,7 +60,7 @@ namespace iRacingSimulator
             this.SubsessionId = Parser.ParseInt(weekend["SubSessionID"].GetValue());
             this.EventType = weekend["EventType"].GetValue();
 
-            YamlQuery session = info["SessionInfo"]["Sessions"]["SessionNum", Sim.Instance!.CurrentSessionNumber!];
+            YamlQuery session = info["SessionInfo"]["Sessions"]["SessionNum", Sim.Instance.CurrentSessionNumber];
             this.SessionType = session["SessionType"].GetValue();
 
             this.TrackUsageText = session["SessionTrackRubberState"].GetValue();
@@ -92,7 +91,7 @@ namespace iRacingSimulator
             this.IsCheckered = (state == SessionStates.CoolDown || state == SessionStates.Checkered);
         }
 
-        public BestLap? UpdateFastestLap(Laptime lap, Driver driver)
+        public BestLap UpdateFastestLap(Laptime lap, Driver driver)
         {
             var classId = driver.Car.CarClassId;
             if (!this.ClassBestLaps.ContainsKey(classId))

@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using iRacingSdkWrapper;
-using iRacingSdkWrapper.Bitfields;
+//using iRacingSdkWrapper.Bitfields;
 using iRacingSimulator.Drivers;
 using iRCC.iRacingSimulator.Events;
 using NLog;
@@ -48,15 +48,15 @@ namespace iRacingSimulator
        
         public static Sim Instance
         {
-            get { return _instance! ?? (_instance = new Sim()); }
+            get { return _instance ?? (_instance = new Sim()); }
         }
-        private static Sim? _instance;
+        private static Sim _instance;
 
-        private TelemetryInfo? _telemetry;
-        private SessionInfo? _sessionInfo;
+        private TelemetryInfo _telemetry;
+        private SessionInfo _sessionInfo;
 
         private bool _mustUpdateSessionData, _mustReloadDrivers;
-        private TimeDelta? _timeDelta;
+        private TimeDelta _timeDelta;
 
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static Logger mlog = LogManager.GetLogger("mlog");
@@ -72,42 +72,42 @@ namespace iRacingSimulator
         /// <summary>
         /// The current session number
         /// </summary>
-        public int? CurrentSessionNumber { get { return _currentSessionNumber!; } }
+        public int? CurrentSessionNumber { get { return _currentSessionNumber; } }
         private int? _currentSessionNumber;
 
         /// <summary>
         /// Telemetry Info as sent from irsdk.
         /// </summary>
-        public TelemetryInfo? Telemetry { get { return _telemetry!; } }
+        public TelemetryInfo Telemetry { get { return _telemetry; } }
 
         /// <summary>
         /// Session Info as sent from irsdk.
         /// </summary>
-        public SessionInfo? SessionInfo { get { return _sessionInfo!; } }
+        public SessionInfo SessionInfo { get { return _sessionInfo; } }
 
         /// <summary>
         /// An object with all related Session Data
         /// </summary>
-        public SessionData SessionData { get { return _sessionData!; } }
+        public SessionData SessionData { get { return _sessionData; } }
         private SessionData _sessionData;
 
         /// <summary>
         /// The Driver object
         /// </summary>
         public Driver Driver { get { return _driver; } }
-        private Driver _driver = null!;
+        private Driver _driver = null;
 
         /// <summary>
         /// The Leader is the Driver object
         /// </summary>
-        public Driver? Leader{ get { return _leader!; } }
-        private Driver? _leader;
+        public Driver Leader{ get { return _leader; } }
+        private Driver _leader;
 
        
         public bool IsReplay { get { return _isReplay; } }
         private bool _isReplay;
 
-        public List<Driver> Drivers { get { return _drivers!; } }
+        public List<Driver> Drivers { get { return _drivers; } }
         private readonly List<Driver> _drivers; 
         private bool _isUpdatingDrivers;
 
@@ -131,7 +131,7 @@ namespace iRacingSimulator
             _mustUpdateSessionData = true;
             _mustReloadDrivers = true;
             _currentSessionNumber = null;
-            _driver = null!;
+            _driver = null;
             _leader = null;
             _drivers.Clear();
             _timeDelta = null;
@@ -149,7 +149,7 @@ namespace iRacingSimulator
 
 #region Subscribed Events Methods
 
-        private void SdkOnSessionInfoUpdated(object? sender, SdkWrapper.SessionInfoUpdatedEventArgs e)
+        private void SdkOnSessionInfoUpdated(object sender, SdkWrapper.SessionInfoUpdatedEventArgs e)
         {
 
 #if SDK_SESSION
@@ -171,7 +171,7 @@ namespace iRacingSimulator
             if (_mustUpdateSessionData)
             {
                 _sessionData.Update(_sessionInfo);
-                _timeDelta = new TimeDelta((float)_sessionData.Track!.Length * 1000f, 20, 64);
+                _timeDelta = new TimeDelta((float)_sessionData.Track.Length * 1000f, 20, 64);
                 _mustUpdateSessionData = false;
 
                 this.OnStaticInfoChanged();
@@ -184,7 +184,7 @@ namespace iRacingSimulator
 
             this.OnSessionInfoUpdated(e);
         }
-        private void SdkOnTelemetryUpdated(object? sender, SdkWrapper.TelemetryUpdatedEventArgs e)
+        private void SdkOnTelemetryUpdated(object sender, SdkWrapper.TelemetryUpdatedEventArgs e)
         {
 
 #if SDK
@@ -251,7 +251,7 @@ namespace iRacingSimulator
             }
             this.OnTelemetryUpdated(e);
         }
-        private void SdkOnDisconnected(object? sender, EventArgs? e)
+        private void SdkOnDisconnected(object sender, EventArgs e)
         {
 
 #if SDK
@@ -265,7 +265,7 @@ namespace iRacingSimulator
             this.Reset();
             this.OnDisconnected();
         }
-        private void SdkOnConnected(object? sender, EventArgs? e)
+        private void SdkOnConnected(object sender, EventArgs e)
         {
 
 #if SDK
@@ -307,15 +307,15 @@ namespace iRacingSimulator
             for (int id = 0; id < 70; id++)
             {
                 // Find existing driver in list
-                Driver? driver = _drivers.SingleOrDefault(d => d.Id == id);
+                Driver driver = _drivers.SingleOrDefault(d => d.Id == id);
                 mlog.Trace($"id:            {id}");
                 mlog.Trace($"driver is null:{driver == null}");
                 if (driver == null)
                 {
                     mlog.Trace("============================================= Calling Driver.FromSessionInfo");
                     driver = Driver.FromSessionInfo(info, id);
-                    mlog.Trace($"Name:          {driver!.Name}");
-                    mlog.Trace($"CarNumber:     {driver!.CarNumber}");
+                    mlog.Trace($"Name:          {driver.Name}");
+                    mlog.Trace($"CarNumber:     {driver.CarNumber}");
                     mlog.Trace($"driver is null:{driver == null}");
                     // If no driver found, end of list reached
                     if (driver == null) break;
@@ -388,14 +388,14 @@ namespace iRacingSimulator
                 var positionQuery = query["Position", position];
 
                 string idValue;
-                if (!positionQuery["CarIdx"].TryGetValue(out idValue!))
+                if (!positionQuery["CarIdx"].TryGetValue(out idValue))
                 {
                     // Driver not found
                     continue;
                 }
 
                 // Find driver and update results
-                int id = int.Parse(idValue!);
+                int id = int.Parse(idValue);
 
                 var driver = _drivers.SingleOrDefault(d => d.Id == id);
                 if (driver != null)
@@ -407,13 +407,13 @@ namespace iRacingSimulator
         private void GetRaceResults(SessionInfo info)
         {
             var query =
-                info["SessionInfo"]["Sessions"]["SessionNum", _currentSessionNumber!]["ResultsPositions"];
+                info["SessionInfo"]["Sessions"]["SessionNum", _currentSessionNumber]["ResultsPositions"];
 
             for (int position = 1; position <= _drivers.Count; position++)
             {
                 var positionQuery = query["Position", position];
 
-                string? idValue;
+                string idValue;
                 if (!positionQuery["CarIdx"].TryGetValue(out idValue))
                 {
                     // Driver not found
@@ -421,14 +421,14 @@ namespace iRacingSimulator
                 }
 
                 // Find driver and update results
-                int id = int.Parse(idValue!);
+                int id = int.Parse(idValue);
 
                 var driver = _drivers.SingleOrDefault(d => d.Id == id);
                 if (driver != null)
                 {
                     var previousPosition = driver.Results.Current.ClassPosition;
 
-                    driver.UpdateResultsInfo(_currentSessionNumber!.Value, positionQuery, position);
+                    driver.UpdateResultsInfo(_currentSessionNumber.Value, positionQuery, position);
 
                     if (_telemetry != null)
                     {
@@ -472,7 +472,7 @@ namespace iRacingSimulator
 
             foreach (var driver in _drivers)
             {
-                driver.Live.CalculateSpeed(info, _sessionData.Track!.Length);
+                driver.Live.CalculateSpeed(info, _sessionData.Track.Length);
                 driver.UpdateLiveInfo(info);
                 driver.UpdatePaceInfo(info);
                 //driver.UpdatePitInfo(info); 
@@ -486,7 +486,7 @@ namespace iRacingSimulator
         private void UpdateLeader()
         {
             Single lead = 9999;
-            Driver? leadDriver = null;
+            Driver leadDriver = null;
             foreach (var driver in _drivers)
             {
                 if (driver.Live.F2Time < lead)
@@ -565,7 +565,7 @@ namespace iRacingSimulator
             if (_timeDelta == null) return;
 
             // Update the positions of all cars
-            _timeDelta.Update(_telemetry!.SessionTime.Value, _telemetry.CarIdxLapDistPct.Value);
+            _timeDelta.Update(_telemetry.SessionTime.Value, _telemetry.CarIdxLapDistPct.Value);
 
             // Order drivers by live position
             var drivers = _drivers.OrderBy(d => d.Live.Position).ToList();
@@ -573,7 +573,7 @@ namespace iRacingSimulator
             {
                 // Get leader
                 //var leader = drivers[0];
-                this.Leader!.Live.DeltaToLeader = "-";
+                this.Leader.Live.DeltaToLeader = "-";
                 this.Leader.Live.DeltaToNext = "-";
 
                 // Loop through drivers
@@ -739,18 +739,18 @@ namespace iRacingSimulator
 
 #region Published Event Handler
 
-        public event EventHandler? Connected;
-        public event EventHandler? Disconnected;
-        public event EventHandler? StaticInfoChanged;
-        public event EventHandler<SdkWrapper.SessionInfoUpdatedEventArgs>? SessionInfoUpdated;
-        public event EventHandler<SdkWrapper.TelemetryUpdatedEventArgs>? TelemetryUpdated;
-        public event EventHandler? SimulationUpdated;
-        public event EventHandler<PaceFlagsEventArgs>? PaceFlagsEvent;
-        public event EventHandler<SessionFlagsEventArgs>? SessionFlagsEvent;
-        public event EventHandler<StartFinishEventArgs>? StartFinishEvent;
-        public event EventHandler<PitRoadEventArgs>? PitRoadEvent;
-        public event EventHandler<OnTrackEventArgs>? OnTrackEvent;
-        public event EventHandler<PositionChangeEventArgs>? PositionChangeEvent;
+        public event EventHandler Connected;
+        public event EventHandler Disconnected;
+        public event EventHandler StaticInfoChanged;
+        public event EventHandler<SdkWrapper.SessionInfoUpdatedEventArgs> SessionInfoUpdated;
+        public event EventHandler<SdkWrapper.TelemetryUpdatedEventArgs> TelemetryUpdated;
+        public event EventHandler SimulationUpdated;
+        public event EventHandler<PaceFlagsEventArgs> PaceFlagsEvent;
+        public event EventHandler<SessionFlagsEventArgs> SessionFlagsEvent;
+        public event EventHandler<StartFinishEventArgs> StartFinishEvent;
+        public event EventHandler<PitRoadEventArgs> PitRoadEvent;
+        public event EventHandler<OnTrackEventArgs> OnTrackEvent;
+        public event EventHandler<PositionChangeEventArgs> PositionChangeEvent;
 
 #endregion
 
@@ -782,7 +782,7 @@ namespace iRacingSimulator
         }
         protected virtual void OnPaceFlagsEvent(PaceFlagsEvent _event)
         {
-            if (this.PaceFlagsEvent != null) this.PaceFlagsEvent(this, new PaceFlagsEventArgs(_event)!);
+            if (this.PaceFlagsEvent != null) this.PaceFlagsEvent(this, new PaceFlagsEventArgs(_event));
         }
         protected virtual void OnSessionFlagsEvent(SessionFlagsEvent _event)
         {
@@ -835,7 +835,7 @@ namespace iRacingSimulator
             e.SpeedMph = speed;
             e.Flag = type;
             e.SessionTime = SessionData.SessionTime;
-            e.Lap = _telemetry!.Lap.Value;
+            e.Lap = _telemetry.Lap.Value;
             this.OnSessionFlagsEvent(e);
         }
         public void NotifyStartFinishEvent(float lapDistance, int sessionTick, Driver driver)

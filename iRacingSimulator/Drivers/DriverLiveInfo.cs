@@ -111,8 +111,8 @@ namespace iRacingSimulator.Drivers
         /// </summary>
         public int CarIdxP2P_Count { get; private set; }
 
-        public string? DeltaToLeader { get; set; }
-        public string? DeltaToNext { get; set; }
+        public string DeltaToLeader { get; set; }
+        public string DeltaToNext { get; set; }
 
         public int CurrentSector { get; set; }
         public int CurrentFakeSector { get; set; }
@@ -207,7 +207,7 @@ namespace iRacingSimulator.Drivers
             this.Position = pos;
             if (this.PositionPrev != pos)
                 if (pos > 0 && PositionPrev > 0)
-                    Sim.Instance!.NotifyPositionChange(pos, this.PositionPrev, driver);
+                    Sim.Instance.NotifyPositionChange(pos, this.PositionPrev, driver);
         }
 
         private void CarIdxLapDistPctUpdate(TelemetryInfo info)
@@ -227,7 +227,7 @@ namespace iRacingSimulator.Drivers
             {
                 if (!_lapDistanceReset)
                 {
-                    Sim.Instance!.NotifyStartFinishEvent(LapDistance, Sim.Instance.SessionData.SessionTick, this.Driver);
+                    Sim.Instance.NotifyStartFinishEvent(LapDistance, Sim.Instance.SessionData.SessionTick, this.Driver);
                     _lapDistanceReset = true;
                 }
             }

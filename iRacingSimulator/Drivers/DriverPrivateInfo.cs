@@ -52,7 +52,7 @@ namespace iRacingSimulator.Drivers
             IsOnTrack = isOnTrack;
             if(isOnTrack != isOnTrackPrev)
             {
-               Sim.Instance!.NotifyIsOnTrackEvent(IsOnTrack);
+               Sim.Instance.NotifyIsOnTrackEvent(IsOnTrack);
             }
         }
     }

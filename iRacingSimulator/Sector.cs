@@ -12,7 +12,7 @@ namespace iRacingSimulator
         public float StartPercentage { get; set; }
 
         public double EnterSessionTime { get; set; }
-        public Laptime? SectorTime { get; set; }
+        public Laptime SectorTime { get; set; }
 
         public Sector Copy()
         {

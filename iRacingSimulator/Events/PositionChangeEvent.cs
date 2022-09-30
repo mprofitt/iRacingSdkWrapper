@@ -18,7 +18,7 @@ namespace iRCC.iRacingSimulator.Events
 
         public int Position { get; set; }
         public int PositionPrev { get; set; }
-        public Driver? Driver { get; set; }
+        public Driver Driver { get; set; }
         public DateTime Time { get; private set; }
     }
 }
