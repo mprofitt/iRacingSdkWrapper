@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using iRacingSdkWrapper;
-using iRacingSimulator.Events;
 
 namespace iRacingSimulator.Drivers
 {
@@ -66,7 +65,6 @@ namespace iRacingSimulator.Drivers
                     this.PitLaneEntryTime = time;
                     this.CurrentPitLaneTimeSeconds = 0;
                     
-                    Sim.Instance.NotifyPitstop(RaceEvent.EventTypes.PitEntry, _driver);
                 }
             }
             else
@@ -143,7 +141,6 @@ namespace iRacingSimulator.Drivers
                     this.LastPitLaneTimeSeconds = this.PitLaneExitTime.Value - this.PitLaneEntryTime.Value;
                     this.CurrentPitLaneTimeSeconds = 0;
 
-                    Sim.Instance.NotifyPitstop(RaceEvent.EventTypes.PitExit, _driver);
 
                     // Reset
                     this.PitLaneEntryTime = null;

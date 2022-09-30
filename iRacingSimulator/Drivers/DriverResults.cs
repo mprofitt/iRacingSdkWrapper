@@ -107,19 +107,19 @@ namespace iRacingSimulator.Drivers
         public int ClassPosition { get; set; }
 
         public int Lap { get; set; }
-        public Laptime Time { get; set; }
+        public Laptime? Time { get; set; }
 
         public int FastestLap { get; set; }
-        public Laptime FastestTime { get; set; }
-        public Laptime LastTime { get; set; }
-        public Laptime AverageTime { get; set; }
+        public Laptime? FastestTime { get; set; }
+        public Laptime? LastTime { get; set; }
+        public Laptime? AverageTime { get; set; }
         public int LapsLed { get; set; }
         public int LapsComplete { get; set; }
         public int LapsDriven { get; set; }
         
         public LaptimeCollection Laps { get; set; }
 
-        public Sector[] SectorTimes { get; set; }
+        public Sector[]? SectorTimes { get; set; }
         public Sector[] FakeSectorTimes { get; set; }
 
         public string SectorsDisplay
@@ -131,23 +131,23 @@ namespace iRacingSimulator.Drivers
             }
         }
 
-        public Sector FakeSector1
+        public Sector? FakeSector1
         {
             get { return FakeSectorTimes == null || FakeSectorTimes.Length == 0 ? null : FakeSectorTimes[0]; }
         }
 
-        public Sector FakeSector2
+        public Sector? FakeSector2
         {
             get { return FakeSectorTimes == null || FakeSectorTimes.Length == 0 ? null : FakeSectorTimes[1]; }
         }
         
-        public Sector FakeSector3
+        public Sector? FakeSector3
         {
             get { return FakeSectorTimes == null || FakeSectorTimes.Length == 0 ? null : FakeSectorTimes[2]; }
         }
 
         public int Incidents { get; set; }
-        public string OutReason { get; set; }
+        public string? OutReason { get; set; }
         public int OutReasonId { get; set; }
         public bool IsOut { get { return this.OutReasonId != 0; } }
 

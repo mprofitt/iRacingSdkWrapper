@@ -1,4 +1,6 @@
-﻿using System;
+﻿using iRacingSdkWrapper;
+using NLog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace iRacingSimulator
 {
-    public class TrackConditions
+    public class Conditions
     {
         public const float Tolerance = 0.1f;
         public static readonly int DefaultWeatherType = 0;
@@ -28,6 +30,55 @@ namespace iRacingSimulator
         public static readonly int MinTemperatureC = (int) TempToC(MinTemperatureF);
         public static readonly int MaxTemperatureC = (int) TempToC(MaxTemperatureF);
         public static readonly int MaxWindSpeedKph = (int) WindToKph(MaxWindSpeedMph);
+
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
+        public static float TrackTemp { get; private set; }
+        public static float AirTemp {get; private set;}
+        public static float WindDir { get; private set;}
+        public static float WindVel { get; private set; }
+        public static int Skies { get; private set; }
+        private static string? _sessionTrackRubberState;
+        private static TrackUsageTypes? _trackUsage;
+
+        public static string? SessionTrackRubberState
+        {
+            get { return _sessionTrackRubberState; }
+            set
+            {
+                _sessionTrackRubberState = value!;
+                TrackUsage = TrackUsageFromString(value!);
+            }
+        }
+
+        public static TrackUsageTypes? TrackUsage
+        {
+            get {
+                if (_trackUsage != null) return _trackUsage;
+                else return TrackUsageTypes.Unknown;
+            }
+            private set { _trackUsage = value; }
+        }
+
+        public static void UpdateTelemtry(TelemetryInfo info)
+        {
+            TrackTemp = info.TrackTempCrew.Value;
+            AirTemp = info.AirTemp.Value;
+            WindDir = info.WindDir.Value;
+            WindVel = info.WindVel.Value;
+        }
+
+        public static void UpdateSessionInfo(SessionInfo info)
+        {
+            var query = info["SessionInfo"]["Sessions"];
+            _sessionTrackRubberState = query["SessionTrackRubberState"].GetValue("");
+
+            //logger.Debug($"*****************************");
+            //logger.Debug($"***** UpdateSessionInfo *****");
+            //logger.Debug($"*****************************");
+            //logger.Debug($"query: {query}");
+            //logger.Debug($"query: {SessionTrackRubberState}");
+        }
 
         /// <summary>
         /// Converts temperature from degrees Celsius to Fahrenheit
@@ -123,20 +174,20 @@ namespace iRacingSimulator
             var step = 45/2f;
 
             if (degrees > 360 - step || degrees < step)
-                return "N";
+                return "north";
             if (degrees < 45+step) 
-                return "NE";
+                return "north east";
             if (degrees < 90+step)
-                return "E";
+                return "east";
             if (degrees < 135 + step)
-                return "SE";
+                return "south east";
             if (degrees < 180 + step)
-                return "S";
+                return "south";
             if (degrees < 225 + step)
-                return "SW";
+                return "south west";
             if (degrees < 270 + step)
-                return "W";
-            return "NW";
+                return "west";
+            return "north west";
         }
         
         /// <summary>
@@ -177,7 +228,7 @@ namespace iRacingSimulator
         /// </summary>
         /// <param name="usage">Track usage string from session info (e.g. "low usage")</param>
         /// <returns></returns>
-        public static TrackUsageTypes TrackUsageFromString(string usage)
+        public static TrackUsageTypes? TrackUsageFromString(string usage)
         {
             switch (usage.ToLower().Trim())
             {

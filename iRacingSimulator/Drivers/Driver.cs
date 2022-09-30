@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.Linq;
 using iRacingSdkWrapper;
+using iRCC.iRacingSimulator.Drivers;
+using NLog;
 
 namespace iRacingSimulator.Drivers
 {
@@ -19,48 +21,55 @@ namespace iRacingSimulator.Drivers
             this.Live = new DriverLiveInfo(this);
             this.Championship = new DriverChampInfo(this);
             this.Private = new DriverPrivateInfo(this);
+            this.PaceInfo = new DriverPaceInfo(this);
         }
+        private static Logger mlog = LogManager.GetLogger("mlog");
 
         /// <summary>
         /// If true, this is your driver on track.
         /// </summary>
         public bool IsCurrentDriver { get; set; }
 
+        /// <summary>
+        /// The leader of the race
+        /// </summary>
+        public bool IsLeader { get; set; }
         public int Id { get; set; }
         public int CustId { get; set; }
-        public string Name { get; set; }
-        public string ShortName { get; set; }
-        public string CarNumber { get { return this.Car.CarNumber; } }
+        public string? Name { get; set; }
+        public string? ShortName { get; set; }
+        public string? CarNumber { get { return this.Car.CarNumber; } }
 
         public int TeamId { get; set; }
-        public string TeamName { get; set; }
+        public string? TeamName { get; set; }
 
         public int IRating { get; set; }
-        public License License { get; set; }
+        public License? License { get; set; }
 
         public bool IsSpectator { get; set; }
         public bool IsPacecar { get; set; }
 
-        public string HelmetDesign { get; set; }
-        public string CarDesign { get; set; }
-        public string SuitDesign { get; set; }
-        public string CarNumberDesign { get; set; }
-        public string CarSponsor1 { get; set; }
-        public string CarSponsor2 { get; set; }
+        public string? HelmetDesign { get; set; }
+        public string? CarDesign { get; set; }
+        public string? SuitDesign { get; set; }
+        public string? CarNumberDesign { get; set; }
+        public string? CarSponsor1 { get; set; }
+        public string? CarSponsor2 { get; set; }
 
-        public string ClubName { get; set; }
-        public string DivisionName { get; set; }
+        public string? ClubName { get; set; }
+        public string? DivisionName { get; set; }
 
         public DriverCarInfo Car { get; set; }
         public DriverPitInfo PitInfo { get; set; }
         public DriverResults Results { get; private set; }
-        public DriverSessionResults CurrentResults { get; set; }
+        public DriverSessionResults? CurrentResults { get; set; }
         public DriverQualyResults QualyResults { get; set; }
         public DriverLiveInfo Live { get; private set; }
-        public DriverChampInfo Championship { get; private set; }
+        public DriverChampInfo? Championship { get; private set; }
         public DriverPrivateInfo Private { get; private set; }
+        public DriverPaceInfo PaceInfo { get; private set; }
 
-        public string LongDisplay
+        public string? LongDisplay
         {
             get { return string.Format("#{0} {1}{2}",
                 this.Car.CarNumber,
@@ -119,16 +128,19 @@ namespace iRacingSimulator.Drivers
 
         public static Driver FromSessionInfo(SessionInfo info, int carIdx)
         {
+            mlog.Trace("============================================= FromSessionInfo Called");
+
             var query = info["DriverInfo"]["Drivers"]["CarIdx", carIdx];
 
             string name;
-            if (!query["UserName"].TryGetValue(out name))
+            if (query["UserName"].TryGetValue(out name!))
             {
+                mlog.Trace($"Driver Not Found");
                 // Driver not found
-                return null;
+                return null!;
             }
-
-            var driver = new Driver();
+            mlog.Trace($"Driver Found: {name}");
+            Driver driver = new Driver();
             driver.Id = carIdx;
             driver.ParseStaticSessionInfo(info);
             driver.ParseDynamicSessionInfo(info);
@@ -156,6 +168,12 @@ namespace iRacingSimulator.Drivers
         {
             this.Private.ParseTelemetry(e);
         }
+
+        internal void UpdatePaceInfo(TelemetryInfo info)
+        {
+            this.PaceInfo.UpdatePaceInfo(info);
+        }
+
 
         private double _prevPos;
 

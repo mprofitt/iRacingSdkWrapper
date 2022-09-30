@@ -65,7 +65,7 @@ namespace iRacingSimulator.Drivers
         [Serializable]
         public abstract class LicenseLevel
         {
-            protected LicenseLevel(Licenses level, int lowRange, int highRange, Color? textBrush = null, string display = null)
+            protected LicenseLevel(Licenses level, int lowRange, int highRange, Color? textBrush = null, string? display = null)
             {
                 this.Level = level;
                 this.Name = level.ToString();

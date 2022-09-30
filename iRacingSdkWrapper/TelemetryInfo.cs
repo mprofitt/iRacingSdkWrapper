@@ -22,6 +22,7 @@ namespace iRacingSdkWrapper
             values.AddRange(new TelemetryValue[]
                                 {
                                     this.SessionTime,
+                                    this.SessionTick,
                                     this.SessionNum,
                                     this.SessionState,
                                     this.SessionUniqueID,
@@ -29,10 +30,18 @@ namespace iRacingSdkWrapper
                                     this.DriverMarker,
                                     this.IsReplayPlaying,
                                     this.ReplayFrameNum,
+                                    this.CarIdxPaceLine,
+                                    this.CarIdxPaceRow,
+                                    this.CarIdxPaceFlags,
                                     this.CarIdxLap,
                                     this.CarIdxLapCompleted,
                                     this.CarIdxLapDistPct,
+                                    this.CarIdxBestLapTime,
                                     this.CarIdxTrackSurface,
+                                    this.CarIdxTrackSurfaceMaterial,
+                                    this.CarIdxTireCompound,
+                                    this.CarIdxQualTireCompound,
+                                    this.CarIdxQualTireCompoundLocked,
                                     this.CarIdxSteer,
                                     this.CarIdxRPM,
                                     this.CarIdxGear,
@@ -41,6 +50,8 @@ namespace iRacingSdkWrapper
                                     this.CarIdxOnPitRoad,
                                     this.CarIdxPosition,
                                     this.CarIdxClassPosition,
+                                    this.CarIdxClass,
+                                    this.CarIdxLastLapTime,
                                     this.SteeringWheelAngle,
                                     this.Throttle,
                                     this.Brake,
@@ -114,7 +125,37 @@ namespace iRacingSdkWrapper
                                     this.PlayerCarTeamIncidentCount,
                                     this.PlayerCarMyIncidentCount,
                                     this.PlayerTrackSurface,
-                                    this.PlayerCarIdx
+                                    this.PlayerCarIdx,
+                                    this.CarLeftRight,
+                                    this.PitsOpen,
+                                    this.OnPitRoad,
+                                    this.CarIdxP2P_Status,
+                                    this.CarIdxP2P_Count,
+                                    this.PaceMode,
+                                    this.PitRepairLeft,
+                                    this.PitOptRepairLeft,
+                                    this.PitstopActive,
+                                    this.FastRepairUsed,
+                                    this.FastRepairAvailable,
+                                    this.LFTiresUsed,
+                                    this.RFTiresUsed,
+                                    this.LRTiresUsed,
+                                    this.RRTiresUsed,
+                                    this.LeftTireSetsUsed,
+                                    this.RightTireSetsUsed,
+                                    this.FrontTireSetsUsed,
+                                    this.RearTireSetsUsed,
+                                    this.TireSetsUsed,
+                                    this.TireSetsAvailable,
+                                    this.LFTiresAvailable,
+                                    this.RFTiresAvailable,
+                                    this.LRTiresAvailable,
+                                    this.RRTiresAvailable,
+                                    this.LeftTireSetsAvailable,
+                                    this.RightTireSetsAvailable,
+                                    this.FrontTireSetsAvailable,
+                                    this.RearTireSetsAvailable,
+                                    this.PlayerCarPitSvStatus,
                                 });
             return values;
         }
@@ -155,6 +196,12 @@ namespace iRacingSdkWrapper
 
 
         /// <summary>
+        /// The tick number for the session.
+        /// </summary>
+        public TelemetryValue<int> SessionTick { get { return new TelemetryValue<int>(sdk, "SessionTick"); } }
+
+
+        /// <summary>
         /// Session number. 
         /// </summary>
         public TelemetryValue<int> SessionNum { get { return new TelemetryValue<int>(sdk, "SessionNum"); } }
@@ -175,7 +222,7 @@ namespace iRacingSdkWrapper
         /// <summary>
         /// Session flags. Unit: irsdk_Flags
         /// </summary>
-        public TelemetryValue<SessionFlag> SessionFlags { get { return new TelemetryValue<SessionFlag>(sdk, "SessionFlags"); } }
+        public TelemetryValue<iRacingSdkWrapper.SessionFlags> SessionFlags { get { return new TelemetryValue<iRacingSdkWrapper.SessionFlags>(sdk, "SessionFlags"); } }
 
 
         /// <summary>
@@ -195,6 +242,20 @@ namespace iRacingSdkWrapper
         /// </summary>
         public TelemetryValue<int> ReplayFrameNum { get { return new TelemetryValue<int>(sdk, "ReplayFrameNum"); } }
 
+        /// <summary>
+        ///  What line cars are pacing in  or -1 if not pacing
+        /// </summary>
+        public TelemetryValue<int[]> CarIdxPaceLine { get { return new TelemetryValue<int[]>(sdk, "CarIdxPaceLine"); } }
+
+        /// <summary>
+        ///  What row cars are pacing in  or -1 if not pacing
+        /// </summary>
+        public TelemetryValue<int[]> CarIdxPaceRow { get { return new TelemetryValue<int[]>(sdk, "CarIdxPaceRow"); } }
+
+        /// <summary>
+        ///  Pacing status flags for each car
+        /// </summary>
+        public TelemetryValue<PaceFlags[]> CarIdxPaceFlags { get { return new TelemetryValue<PaceFlags[]>(sdk, "CarIdxPaceFlags"); } }
 
         /// <summary>
         /// Current lap number by car index
@@ -217,6 +278,10 @@ namespace iRacingSdkWrapper
         /// </summary>
         public TelemetryValue<TrackSurfaces[]> CarIdxTrackSurface { get { return new TelemetryValue<TrackSurfaces[]>(sdk, "CarIdxTrackSurface"); } }
 
+        /// <summary>
+        ///  Track surface material type by car index
+        /// </summary>
+        public TelemetryValue<TrackSurfaceMaterial[]> CarIdxTrackSurfaceMaterial { get { return new TelemetryValue<TrackSurfaceMaterial[]>(sdk, "CarIdxTrackSurfaceMaterial"); } }
 
         /// <summary>
         /// Steering wheel angle by car index. Unit: rad
@@ -245,6 +310,45 @@ namespace iRacingSdkWrapper
 
         public TelemetryValue<int[]> CarIdxClassPosition { get { return new TelemetryValue<int[]>(sdk, "CarIdxClassPosition"); } }
 
+        /// <summary>
+        /// Cars class id by car index
+        /// </summary>
+        public TelemetryValue<int[]> CarIdxClass { get { return new TelemetryValue<int[]>(sdk, "CarIdxClass"); } }
+
+        /// <summary>
+        /// Cars last lap time
+        /// </summary>
+        public TelemetryValue<float[]> CarIdxLastLapTime { get { return new TelemetryValue<float[]>(sdk, "CarIdxLastLapTime"); } }
+
+        /// <summary>
+        /// Cars best lap time
+        /// </summary>
+        public TelemetryValue<float[]> CarIdxBestLapTime { get { return new TelemetryValue<float[]>(sdk, "CarIdxBestLapTime"); } }
+
+        /// <summary>
+        /// Cars current tire compound
+        /// </summary>
+        public TelemetryValue<int[]> CarIdxTireCompound { get { return new TelemetryValue<int[]>(sdk, "CarIdxTireCompound"); } }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public TelemetryValue<int[]> CarIdxQualTireCompound { get { return new TelemetryValue<int[]>(sdk, "CarIdxQualTireCompound"); } }
+
+        /// <summary>
+        /// Cars Qual tire compound is locked-in
+        /// </summary>
+        public TelemetryValue<bool[]> CarIdxQualTireCompoundLocked { get { return new TelemetryValue<bool[]>(sdk, "CarIdxQualTireCompoundLocked"); } }
+
+        /// <summary>
+        /// Push2Pass active or not
+        /// </summary>
+        public TelemetryValue<bool[]> CarIdxP2P_Status { get { return new TelemetryValue<bool[]>(sdk, "CarIdxP2P_Status"); } }
+
+        /// <summary>
+        /// Push2Pass active or not
+        /// </summary>
+        public TelemetryValue<int[]> CarIdxP2P_Count { get { return new TelemetryValue<int[]>(sdk, "CarIdxP2P_Count"); } }
 
         /// <summary>
         /// Steering wheel angle. Unit: rad
@@ -556,5 +660,142 @@ namespace iRacingSdkWrapper
         public TelemetryValue<TrackSurfaces> PlayerTrackSurface { get { return new TelemetryValue<TrackSurfaces>(sdk, "PlayerTrackSurface"); } }
 
         public TelemetryValue<int> PlayerCarIdx { get { return new TelemetryValue<int>(sdk, "PlayerCarIdx"); } }
+
+        public TelemetryValue<CarLeftRight> CarLeftRight { get { return new TelemetryValue<CarLeftRight>(sdk, "CarLeftRight"); } }
+        /// <summary>
+        /// Pits open for player, bool
+        /// </summary>
+        public TelemetryValue<bool> PitsOpen { get { return new TelemetryValue<bool>(sdk, "PitsOpen"); } }
+
+        /// <summary>
+        ///  Is the player car on pit road between the cones
+        /// </summary>
+        public TelemetryValue<bool> OnPitRoad { get { return new TelemetryValue<bool>(sdk, "OnPitRoad"); } }
+
+        /// <summary>
+        /// Are we pacing or not
+        /// </summary>
+        public TelemetryValue<PaceMode> PaceMode { get { return new TelemetryValue<PaceMode>(sdk, "PaceMode"); } }
+
+        /// <summary>
+        /// Time left for mandatory pit repairs if repairs are active
+        /// </summary>
+        public TelemetryValue<int> PitRepairLeft { get { return new TelemetryValue<int>(sdk, "PitRepairLeft"); } }
+
+        /// <summary>
+        /// Time left for optional repairs if repairs are active
+        /// </summary>
+        public TelemetryValue<int> PitOptRepairLeft { get { return new TelemetryValue<int>(sdk, "PitOptRepairLeft"); } }
+
+        /// <summary>
+        /// Is the player getting pit stop service
+        /// </summary>
+        public TelemetryValue<bool> PitstopActive { get { return new TelemetryValue<bool>(sdk, "PitstopActive"); } }
+
+        /// <summary>
+        /// How many fast repairs used so far
+        /// </summary>
+        public TelemetryValue<int> FastRepairUsed { get { return new TelemetryValue<int>(sdk, "FastRepairUsed"); } }
+
+        /// <summary>
+        /// How many fast repairs left 255 is unlimited
+        /// </summary>
+        public TelemetryValue<int> FastRepairAvailable { get { return new TelemetryValue<int>(sdk, "FastRepairAvailable"); } }
+
+        /// <summary>
+        /// How many left front tires used so far
+        /// </summary>
+        public TelemetryValue<int> LFTiresUsed { get { return new TelemetryValue<int>(sdk, "LFTiresUsed"); } }
+
+        /// <summary>
+        /// How many right front tires used so far
+        /// </summary>
+        public TelemetryValue<int> RFTiresUsed { get { return new TelemetryValue<int>(sdk, "RFTiresUsed"); } }
+
+        /// <summary>
+        /// How many left rear tires used so far
+        /// </summary>
+        public TelemetryValue<int> LRTiresUsed { get { return new TelemetryValue<int>(sdk, "LRTiresUsed"); } }
+
+        /// <summary>
+        /// How many right rear tires used so far
+        /// </summary>
+        public TelemetryValue<int> RRTiresUsed { get { return new TelemetryValue<int>(sdk, "RRTiresUsed"); } }
+
+        /// <summary>
+        /// How many left tire sets used so far
+        /// </summary>
+        public TelemetryValue<int> LeftTireSetsUsed { get { return new TelemetryValue<int>(sdk, "LeftTireSetsUsed"); } }
+
+        /// <summary>
+        /// How many right tire sets used so far
+        /// </summary>
+        public TelemetryValue<int> RightTireSetsUsed { get { return new TelemetryValue<int>(sdk, "RightTireSetsUsed"); } }
+
+        /// <summary>
+        /// How many front tire sets used so far
+        /// </summary>
+        public TelemetryValue<int> FrontTireSetsUsed { get { return new TelemetryValue<int>(sdk, "FrontTireSetsUsed"); } }
+
+        /// <summary>
+        /// How many rear tire sets used so far
+        /// </summary>
+        public TelemetryValue<int> RearTireSetsUsed { get { return new TelemetryValue<int>(sdk, "RearTireSetsUsed"); } }
+
+        /// <summary>
+        /// How many tire sets used so far
+        /// </summary>
+        public TelemetryValue<int> TireSetsUsed { get { return new TelemetryValue<int>(sdk, "TireSetsUsed"); } }
+
+        /// <summary>
+        /// How many tire sets are available
+        /// </summary>
+        public TelemetryValue<int> TireSetsAvailable { get { return new TelemetryValue<int>(sdk, "TireSetsAvailable"); } }
+
+        /// <summary>
+        /// How many left front tire sets are available
+        /// </summary>
+        public TelemetryValue<int> LFTiresAvailable { get { return new TelemetryValue<int>(sdk, "LFTiresAvailable"); } }
+
+        /// <summary>
+        /// How many right front tire sets are available
+        /// </summary>
+        public TelemetryValue<int> RFTiresAvailable { get { return new TelemetryValue<int>(sdk, "RFTiresAvailable"); } }
+
+        /// <summary>
+        /// How many left rear tire sets are available
+        /// </summary>
+        public TelemetryValue<int> LRTiresAvailable { get { return new TelemetryValue<int>(sdk, "LRTiresAvailable"); } }
+
+        /// <summary>
+        /// How many right rear tire sets are available
+        /// </summary>
+        public TelemetryValue<int> RRTiresAvailable { get { return new TelemetryValue<int>(sdk, "RRTiresAvailable"); } }
+
+        /// <summary>
+        /// How many left tire sets are available
+        /// </summary>
+        public TelemetryValue<int> LeftTireSetsAvailable { get { return new TelemetryValue<int>(sdk, "LeftTireSetsAvailable"); } }
+
+        /// <summary>
+        /// How many right tire sets are available
+        /// </summary>
+        public TelemetryValue<int> RightTireSetsAvailable { get { return new TelemetryValue<int>(sdk, "RightTireSetsAvailable"); } }
+
+        /// <summary>
+        /// How many front tire sets are available
+        /// </summary>
+        public TelemetryValue<int> FrontTireSetsAvailable { get { return new TelemetryValue<int>(sdk, "FrontTireSetsAvailable"); } }
+
+        /// <summary>
+        /// How many rear tire sets are available
+        /// </summary>
+        public TelemetryValue<int> RearTireSetsAvailable { get { return new TelemetryValue<int>(sdk, "RearTireSetsAvailable"); } }
+
+        /// <summary>
+        /// How many rear tire sets are available
+        /// </summary>
+        public TelemetryValue<int> PlayerCarPitSvStatus { get { return new TelemetryValue<int>(sdk, "PlayerCarPitSvStatus"); } }
+
     }
 }

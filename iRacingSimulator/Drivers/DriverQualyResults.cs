@@ -22,7 +22,7 @@ namespace iRacingSimulator.Drivers
 
         public int Position { get; set; }
         public int ClassPosition { get; set; }
-        public Laptime Lap { get; set; }
+        public Laptime? Lap { get; set; }
 
         internal void ParseYaml(YamlQuery query, int position)
         {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -10,6 +11,26 @@ namespace iRacingSimulator
 {
     public static class Parser
     {
+        public static int ParseTrackPitSpeedLimit(string value)
+       
+        {
+            double length = 0;
+
+            var indexOfKph = value.IndexOf("kph");
+            if (indexOfKph > 0) value = value.Substring(0, indexOfKph);
+
+            if (double.TryParse(value, NumberStyles.AllowDecimalPoint | NumberStyles.AllowTrailingWhite, CultureInfo.InvariantCulture, out length))
+            {
+                return Convert.ToInt32(length * 0.621371); //MPH
+            }
+            return 0;
+        }
+
+
+
+
+
+
         public static double ParseTrackLength(string value)
         {
             // value = "6.93 km"

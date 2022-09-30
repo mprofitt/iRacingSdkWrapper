@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using iRacingSdkWrapper;
 using iRacingSdkWrapper.Bitfields;
 using iRacingSimulator.Drivers;
+using NAudio.MediaFoundation;
 
 namespace iRacingSimulator
 {
@@ -14,27 +17,31 @@ namespace iRacingSimulator
         }
 
         public Track Track { get; set; }
-        public string EventType { get; set; }
-        public string SessionType { get; set; }
+        public string? EventType { get; set; }
+        public string? SessionType { get; set; }
         public int SubsessionId { get; set; }
 
         public double SessionTime { get; set; }
+
+        public int SessionTick { get; set; }
+
         public double TimeRemaining { get; set; }
         public int LeaderLap { get; set; }
 
         public bool TrackCleanup { get; set; }
         public bool DynamicTrack { get; set; }
-        public TrackConditions.TrackUsageTypes TrackUsage { get; set; }
-        public string TrackUsageText { get; set; }
+        public Conditions.TrackUsageTypes? TrackUsage { get; set; }
+        public string? TrackUsageText { get; set; }
 
-        public string RaceLaps { get; set; }
+        public string? RaceLaps { get; set; }
         public double RaceTime { get; set; }
 
         public Dictionary<int, BestLap> ClassBestLaps { get; set; }
-        public BestLap OverallBestLap { get; set; }
-        
-        public SessionFlag Flags { get; set; }
+        public BestLap? OverallBestLap { get; set; }
+
+        public iRacingSdkWrapper.SessionFlags Flags { get; set; } = iRacingSdkWrapper.SessionFlags.Caution;
         public SessionStates State { get; set; }
+
 
         /// <summary>
         /// Is the checkered flag shown? (e.g. winner has passed the finish, but other drivers may still be racing)
@@ -54,11 +61,11 @@ namespace iRacingSimulator
             this.SubsessionId = Parser.ParseInt(weekend["SubSessionID"].GetValue());
             this.EventType = weekend["EventType"].GetValue();
 
-            var session = info["SessionInfo"]["Sessions"]["SessionNum", Sim.Instance.CurrentSessionNumber];
+            YamlQuery session = info["SessionInfo"]["Sessions"]["SessionNum", Sim.Instance!.CurrentSessionNumber!];
             this.SessionType = session["SessionType"].GetValue();
 
             this.TrackUsageText = session["SessionTrackRubberState"].GetValue();
-            this.TrackUsage = TrackConditions.TrackUsageFromString(this.TrackUsageText);
+            this.TrackUsage = Conditions.TrackUsageFromString(this.TrackUsageText);
             
             this.TrackCleanup = weekend["TrackCleanup"].GetValue() == "1"; 
             this.DynamicTrack = weekend["TrackDynamicTrack"].GetValue() == "1";
@@ -75,6 +82,7 @@ namespace iRacingSimulator
             this.SessionTime = telemetry.SessionTime.Value;
             this.TimeRemaining = telemetry.SessionTimeRemain.Value;
             this.Flags = telemetry.SessionFlags.Value;
+            this.SessionTick = telemetry.SessionTick.Value;
         }
 
         public void UpdateState(SessionStates state)
@@ -84,7 +92,7 @@ namespace iRacingSimulator
             this.IsCheckered = (state == SessionStates.CoolDown || state == SessionStates.Checkered);
         }
 
-        public BestLap UpdateFastestLap(Laptime lap, Driver driver)
+        public BestLap? UpdateFastestLap(Laptime lap, Driver driver)
         {
             var classId = driver.Car.CarClassId;
             if (!this.ClassBestLaps.ContainsKey(classId))
