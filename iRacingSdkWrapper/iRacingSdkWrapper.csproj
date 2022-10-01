@@ -34,6 +34,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="iRSDKSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\irsdkSharp\bin\Debug\iRSDKSharp.dll</HintPath>
+    </Reference>
     <Reference Include="NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\..\iRCC\packages\NLog.5.0.4\lib\net46\NLog.dll</HintPath>
     </Reference>
@@ -79,12 +83,6 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="telemetry_11_23_15.pdf" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\irsdkSharp\iRSDKSharp.csproj">
-      <Project>{72631b85-eb9a-473e-9b4c-65b355a9000d}</Project>
-      <Name>iRSDKSharp</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

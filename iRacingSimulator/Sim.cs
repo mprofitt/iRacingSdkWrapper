@@ -1,11 +1,11 @@
 ﻿#define SDK_SESSION
-//#undef SDK_SESSION
+#undef SDK_SESSION
 #define SDK_TELEMETERY
 #undef SDK_TELEMETERY
 #define GET_DRIVERS
-//#undef GET_DRIVERS
+#undef GET_DRIVERS
 #define ON_ON_TRACK_EVENT
-//#undef ON_ON_TRACK_EVENT
+#undef ON_ON_TRACK_EVENT
 
 
 using System;
