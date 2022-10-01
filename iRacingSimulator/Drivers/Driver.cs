@@ -128,12 +128,10 @@ namespace iRacingSimulator.Drivers
 
         public static Driver FromSessionInfo(SessionInfo info, int carIdx)
         {
-            mlog.Trace("============================================= FromSessionInfo Called");
-
-            var query = info["DriverInfo"]["Drivers"]["CarIdx", carIdx];
+            YamlQuery query = info["DriverInfo"]["Drivers"]["CarIdx", carIdx];
 
             string name;
-            if (query["UserName"].TryGetValue(out name))
+            if (!query["UserName"].TryGetValue(out name))
             {
                 mlog.Trace($"Driver Not Found");
                 // Driver not found

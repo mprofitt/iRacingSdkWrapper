@@ -72,7 +72,8 @@ namespace iRacingSimulator.Drivers
 
         public TrackSurfaces TrackSurfacePrev { get; private set; }
 
-        public bool OnPitRoad { get; private set; } 
+        public bool OnPitRoad { get; private set; }
+        private bool onPitRoadPrev { get; set; }
 
         public int Gear { get; private set; }
 
@@ -194,12 +195,28 @@ namespace iRacingSimulator.Drivers
             this.CarIdxQualTireCompoundLocked = e.CarIdxQualTireCompoundLocked.Value[this.Driver.Id];
             this.CarIdxP2P_Status = e.CarIdxP2P_Status.Value[this.Driver.Id];
             this.CarIdxP2P_Count = e.CarIdxP2P_Count.Value[this.Driver.Id];
-            this.OnPitRoad = e.CarIdxOnPitRoad.Value[this.Driver.Id];
+            CheckPitRoadStatus(e.CarIdxOnPitRoad.Value[this.Driver.Id], Driver);
 
         }
 
         private double _prevSpeedUpdateTime;
         private double _prevSpeedUpdateDist;
+
+        private void CheckPitRoadStatus (bool onPitRoad, Driver Driver)
+        {
+            //if (Sim.Instance.Driver == null) return;
+            
+            this.onPitRoadPrev = this.OnPitRoad;
+            this.OnPitRoad = onPitRoad;
+            if(OnPitRoad != onPitRoadPrev)
+            {
+                PitAction pitAction = PitAction.None;
+                if (OnPitRoad == true) pitAction = PitAction.PitEntry;
+                if (OnPitRoad == false) pitAction = PitAction.PitExit;
+
+                Sim.Instance.NotifyPitRoadEvent(pitAction, Driver);
+            }
+        }
 
         private void CheckForPositionChange(int pos, Driver driver)
         {

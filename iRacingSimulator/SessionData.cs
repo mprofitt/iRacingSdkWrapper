@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
-using System.Linq;
-using iRacingSdkWrapper;
-using iRacingSdkWrapper.Bitfields;
+﻿using iRacingSdkWrapper;
 using iRacingSimulator.Drivers;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace iRacingSimulator
 {
@@ -65,13 +62,13 @@ namespace iRacingSimulator
 
             this.TrackUsageText = session["SessionTrackRubberState"].GetValue();
             this.TrackUsage = Conditions.TrackUsageFromString(this.TrackUsageText);
-            
-            this.TrackCleanup = weekend["TrackCleanup"].GetValue() == "1"; 
+
+            this.TrackCleanup = weekend["TrackCleanup"].GetValue() == "1";
             this.DynamicTrack = weekend["TrackDynamicTrack"].GetValue() == "1";
 
             var laps = session["SessionLaps"].GetValue();
             var time = Parser.ParseSec(session["SessionTime"].GetValue());
-            
+
             this.RaceLaps = laps;
             this.RaceTime = time;
         }

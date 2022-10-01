@@ -1,9 +1,13 @@
-﻿using System;
+﻿#define IsOnTrackCheck
+//#undef IsOnTrackCheck
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using iRacingSdkWrapper;
+using NLog;
 
 namespace iRacingSimulator.Drivers
 {
@@ -30,8 +34,12 @@ namespace iRacingSimulator.Drivers
         public float FuelPercentage { get; private set; }
         public float FuelPressure { get; private set; }
         public int TireSetsAvailable { get; private set; }  
-        public bool IsOnTrack { get; private set; }
+        public bool IsOnTrack { get; private set; } 
         private bool isOnTrackPrev;
+
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+        private static Logger mlog = LogManager.GetLogger("mlog");
+
         public void ParseTelemetry(TelemetryInfo e)
         {
             this.Speed = e.Speed.Value;
@@ -42,17 +50,40 @@ namespace iRacingSimulator.Drivers
             this.FuelPercentage = e.FuelLevelPct.Value;
             this.FuelPressure = e.FuelPress.Value;
             this.TireSetsAvailable = e.TireSetsAvailable.Value;
-            IsOnTrackCheck(this.IsOnTrack = e.IsOnTrack.Value); 
+            IsOnTrackCheck(e.IsOnTrack.Value); 
             // TODO: add remaining parameters
         }
 
         private void IsOnTrackCheck(bool isOnTrack)
         {
+
+#if IsOnTrackCheck
+
+            mlog.Trace($"-------------------------------------------------------------");
+            mlog.Trace($"--------------------Is On Track Check------------------------");
+            mlog.Trace($"-------------------------------------------------------------");
+            mlog.Trace($"isOnTrack:                     {isOnTrack}");
+            mlog.Trace($"IsOnTrack:                     {IsOnTrack}");
+            mlog.Trace($"isOnTrackPrev:                 {isOnTrackPrev}");
+            mlog.Trace($"Instance.Driver is null:       {Sim.Instance.Driver == null}");
+
+#endif
+            //Debug
+            //if (Sim.Instance.Driver == null) return;
+            
             isOnTrackPrev = IsOnTrack;
             IsOnTrack = isOnTrack;
-            if(isOnTrack != isOnTrackPrev)
+
+            mlog.Trace($"-------------------------------------------------------------"); 
+            mlog.Trace($"IsOnTrack:                     {IsOnTrack}");
+            mlog.Trace($"isOnTrackPrev:                 {isOnTrackPrev}");
+            mlog.Trace($"IsOnTrack != isOnTrackPrev:    {IsOnTrack != isOnTrackPrev}");
+
+            if (IsOnTrack != isOnTrackPrev)
             {
-               Sim.Instance.NotifyIsOnTrackEvent(IsOnTrack);
+                mlog.Trace($"IsOnTrackCheck Event: IsOnTrack {IsOnTrack}");
+
+                Sim.Instance.NotifyIsOnTrackEvent(IsOnTrack);
             }
         }
     }

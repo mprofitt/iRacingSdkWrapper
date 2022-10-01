@@ -1,7 +1,11 @@
 ﻿#define SDK_SESSION
 //#undef SDK_SESSION
+#define SDK_TELEMETERY
+#undef SDK_TELEMETERY
 #define GET_DRIVERS
 //#undef GET_DRIVERS
+#define ON_ON_TRACK_EVENT
+//#undef ON_ON_TRACK_EVENT
 
 
 using System;
@@ -160,17 +164,31 @@ namespace iRacingSimulator
             mlog.Trace($"_currentSessionNumber is null  {_currentSessionNumber == null}");
             mlog.Trace($"_mustUpdateSessionData         {_mustUpdateSessionData}");
 
+            YamlQuery query = e.SessionInfo["DriverInfo"]["Drivers"]["CarIdx", 0];
+
+            string name;
+            if (!query["UserName"].TryGetValue(out name))
+            {
+                mlog.Trace($"Driver Not Found");
+                // Driver not found
+            }
+            mlog.Trace($"name         {name}");
+            mlog.Trace($"Query work? {query["UserName"].TryGetValue(out name)}");
+
 #endif
             //Debug 
             // Cache info
             _sessionInfo = e.SessionInfo;
-
+            mlog.Trace($"_sessionInfo         {_sessionInfo}");
             // Stop if we don't have a session number yet
             if (_currentSessionNumber == null) return;
 
             if (_mustUpdateSessionData)
             {
                 _sessionData.Update(_sessionInfo);
+
+                mlog.Trace($"_sessionData.Track.Length: { _sessionData.Track.Length * 1000f}");
+
                 _timeDelta = new TimeDelta((float)_sessionData.Track.Length * 1000f, 20, 64);
                 _mustUpdateSessionData = false;
 
@@ -187,12 +205,12 @@ namespace iRacingSimulator
         private void SdkOnTelemetryUpdated(object sender, SdkWrapper.TelemetryUpdatedEventArgs e)
         {
 
-#if SDK
+#if SDK_TELEMETERY
 
             mlog.Trace($"-------------------------------------------------------------");
             mlog.Trace($"------------------SdkOnTelemetryUpdated----------------------");
             mlog.Trace($"-------------------------------------------------------------");
-
+            mlog.Trace($"_currentSessionNumber: {_currentSessionNumber}");
 #endif
             //Debug 
             // Cache info
@@ -308,15 +326,11 @@ namespace iRacingSimulator
             {
                 // Find existing driver in list
                 Driver driver = _drivers.SingleOrDefault(d => d.Id == id);
-                mlog.Trace($"id:            {id}");
-                mlog.Trace($"driver is null:{driver == null}");
+
                 if (driver == null)
                 {
-                    mlog.Trace("============================================= Calling Driver.FromSessionInfo");
                     driver = Driver.FromSessionInfo(info, id);
-                    mlog.Trace($"Name:          {driver.Name}");
-                    mlog.Trace($"CarNumber:     {driver.CarNumber}");
-                    mlog.Trace($"driver is null:{driver == null}");
+
                     // If no driver found, end of list reached
                     if (driver == null) break;
 
@@ -798,6 +812,17 @@ namespace iRacingSimulator
         }
         protected virtual void OnOnTrackEvent(bool _event)
         {
+
+#if ON_ON_TRACK_EVENT
+
+            mlog.Trace($"------------------------------------------------------------------");
+            mlog.Trace($"----------------------- On On Track Event-------------------------");
+            mlog.Trace($"------------------------------------------------------------------");
+            mlog.Trace($" ");
+
+#endif
+            //Debug
+
             if (this.OnTrackEvent != null) OnTrackEvent(this, new OnTrackEventArgs(_event));
         }
         protected virtual void OnPositionChange(PositionChangeEvent _event)
@@ -850,6 +875,15 @@ namespace iRacingSimulator
         }
         public void NotifyIsOnTrackEvent(bool onTrack)
         {
+
+#if ON_ON_TRACK_EVENT
+
+            mlog.Trace($"--------------------------------------------------------");
+            mlog.Trace($"--------------- Notify Is On Track Event ---------------");
+            mlog.Trace($"--------------------------------------------------------");
+            mlog.Trace($"onTrack:         {onTrack}");
+
+#endif // Debug
             OnOnTrackEvent(onTrack);
         }
         public void NotifyPositionChange(int pos, int posPrev, Driver driver)
