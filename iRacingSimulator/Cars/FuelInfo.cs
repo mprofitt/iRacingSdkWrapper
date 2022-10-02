@@ -28,68 +28,95 @@ namespace iRacingSimulator.Cars
         /// <summary>
         /// Maximunm fuel level in liters
         /// </summary>
-        public float FuelMaxLtr { get; private set; }
+        public float MaxLtr { get; private set; }
         
         /// <summary>
         /// Maximum fuel level in gallons
         /// </summary>
-        public float FuelMaxGal { get; private set; }
+        public float MaxGal { get; private set; }
 
         /// <summary>
-        /// Maximum feul percentage
+        /// Maximum fuel percentage
         /// </summary>
-        public float MaxFuelPct { get; private set; }
+        public float MaxPct { get; private set; }
        
         /// <summary>
         /// Fuel weight - kilograms per liter
         /// </summary>
-        public float FuelKgPerLtr { get; private set; }
+        public float KgPerLtr { get; private set; }
 
         /// <summary>
         /// Fuel weight - pounds per gallon
         /// </summary>
-        public float FuelLbsPerGal { get; private set; }
+        public float LbsPerGal { get; private set; }
 
         /// <summary>
         /// Liters of fuel remaining
         /// </summary>
-        public float FuelLevel { get; private set; }
+        public float LevelLtr { get; private set; }
+
+        /// <summary>
+        /// Gallons of fuel remaining
+        /// </summary>
+        public float LevelGal { get; private set; }
+        private float prevLevelGal;
 
         /// <summary>
         /// Percent fuel remaining
         /// </summary>
-        public float FuelLevelPct { get; private set; }
+        public float LevelPct { get; private set; }
 
         /// <summary>
         /// Engine fuel used instantaneous
         /// </summary>
-        public float FuelUsePerHour { get; private set; }
+        public float UsePerHour { get; private set; }
+
+        /// <summary>
+        /// Fuel consumed during 1 lap.
+        /// </summary>
+        public float LapUsage { get; private set; }
 
         /// <summary>
         /// Engine fuel pressure
         /// </summary>
-        public float FuelPress { get; private set; }    
+        public float Pressure { get; private set; }
 
+        private int currLap;
+        private int prevLap;
 
         public void UpdateSessionInfo(SessionInfo info)
         {
             YamlQuery query = info["DriverInfo"];
             string output;
 
-            if (query["FuelMaxLtr"].TryGetValue(out output)) FuelMaxLtr = float.Parse(output);
-            if (query["MaxFuelPct"].TryGetValue(out output)) MaxFuelPct = float.Parse(output);
-            if (query["FuelKgPerLtr"].TryGetValue(out output)) FuelKgPerLtr = float.Parse(output);
+            if (query["FuelMaxLtr"].TryGetValue(out output)) MaxLtr = float.Parse(output);
+            if (query["MaxFuelPct"].TryGetValue(out output)) MaxPct = float.Parse(output);
+            if (query["FuelKgPerLtr"].TryGetValue(out output)) KgPerLtr = float.Parse(output);
 
-            FuelMaxGal = FuelMaxLtr * 0.2641720524f;
-            FuelLbsPerGal = FuelKgPerLtr = FuelLbsPerGal * 2.2046226218f;
+            MaxGal = MaxLtr * 0.2641720524f;
+            LbsPerGal = KgPerLtr = LbsPerGal * 2.2046226218f;
         }
 
         public void UpdateTelemetryInfo(TelemetryInfo info)
         {
-            FuelLevel = info.FuelLevel.Value;
-            FuelLevelPct = info.FuelLevelPct.Value;
-            FuelUsePerHour = info.FuelUsePerHour.Value;
-            FuelPress = info.FuelPress.Value;
+            LevelLtr = info.FuelLevel.Value;
+            LevelPct = info.FuelLevelPct.Value;
+            UsePerHour = info.FuelUsePerHour.Value;
+            Pressure = info.FuelPress.Value;
+            LevelGal = info.FuelLevel.Value * 0.2641720524f;
+
+            currLap = info.LapCompleted.Value;
+            UpdateLapFuelUage(currLap);
+            
+        }
+
+        private void UpdateLapFuelUage(int lap)
+        {
+            if(currLap != prevLap)
+            {
+                LapUsage = LevelGal - prevLevelGal; 
+            }
+
         }
     }
 }
