@@ -16,6 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using iRacingSdkWrapper;
+using iRacingSimulator.Cars;
 //using iRacingSdkWrapper.Bitfields;
 using iRacingSimulator.Drivers;
 using iRCC.iRacingSimulator.Events;
@@ -49,7 +50,9 @@ namespace iRacingSimulator
             _sdk.TelemetryUpdated += SdkOnTelemetryUpdated;
             _sdk.SessionInfoUpdated += SdkOnSessionInfoUpdated;
         }
-       
+
+        Car _car = new Car();
+
         public static Sim Instance
         {
             get { return _instance ?? (_instance = new Sim()); }
@@ -100,6 +103,8 @@ namespace iRacingSimulator
         /// </summary>
         public Driver Driver { get { return _driver; } }
         private Driver _driver = null;
+
+        public Car Car { get { return _car; } }
 
         /// <summary>
         /// The Leader is the Driver object
@@ -194,11 +199,13 @@ namespace iRacingSimulator
 
                 this.OnStaticInfoChanged();
             }
-            mlog.Trace("============================================= Calling UpdateDriverList");
             // Update drivers
             this.UpdateDriverList(_sessionInfo);
 
             Track.UpdateTrackSessionInfo(_sessionInfo);
+
+            // This will become the origin for all session updates.
+            UpdateSessionInfo(_sessionInfo);
 
             this.OnSessionInfoUpdated(e);
         }
@@ -250,6 +257,7 @@ namespace iRacingSimulator
 
             Track.UpdateTrackTelemetry(e.TelemetryInfo);
 
+            UpdateTelemetryInfo(e.TelemetryInfo);
 
             if (!sessionWasFinished && this.SessionData.IsFinished)
             {
@@ -472,6 +480,10 @@ namespace iRacingSimulator
                     }
                 }
             }
+        }
+        private void UpdateSessionInfo(SessionInfo info)
+        {
+            Car.Fuel.UpdateSessionInfo(info);
         }
 
 #endregion
@@ -748,10 +760,14 @@ namespace iRacingSimulator
             }
 
         }
+        private void UpdateTelemetryInfo(TelemetryInfo info)
+        {
+            Car.UpdateTelemetryInfo(info);
+        }
 
-#endregion
+        #endregion
 
-#region Published Event Handler
+        #region Published Event Handler
 
         public event EventHandler Connected;
         public event EventHandler Disconnected;

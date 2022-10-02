@@ -145,7 +145,7 @@ namespace iRacingSdkWrapper
             {
                 return this.Value;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return defaultValue;
             }

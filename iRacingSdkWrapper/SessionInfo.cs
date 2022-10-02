@@ -111,7 +111,7 @@ namespace iRacingSdkWrapper
                 }
                 _isValidYaml = true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 _isValidYaml = false;
             }

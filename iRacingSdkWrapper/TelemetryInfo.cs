@@ -156,6 +156,7 @@ namespace iRacingSdkWrapper
                                     this.FrontTireSetsAvailable,
                                     this.RearTireSetsAvailable,
                                     this.PlayerCarPitSvStatus,
+                                    this.FuelUsePerHour,
                                 });
             return values;
         }
@@ -793,9 +794,18 @@ namespace iRacingSdkWrapper
         public TelemetryValue<int> RearTireSetsAvailable { get { return new TelemetryValue<int>(sdk, "RearTireSetsAvailable"); } }
 
         /// <summary>
-        /// How many rear tire sets are available
+        /// Player Pit Service Status
+        /// 
+        /// 
+        /// 
         /// </summary>
         public TelemetryValue<int> PlayerCarPitSvStatus { get { return new TelemetryValue<int>(sdk, "PlayerCarPitSvStatus"); } }
+
+        /// <summary>
+        /// Fuel usage per hour
+        /// </summary>
+        public TelemetryValue<float> FuelUsePerHour { get { return new TelemetryValue<float>(sdk, "FuelUsePerHour"); } }
+
 
     }
 }
