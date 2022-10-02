@@ -1,9 +1,9 @@
 ﻿#define SDK_SESSION
-#undef SDK_SESSION
+//#undef SDK_SESSION
 #define SDK_TELEMETERY
-#undef SDK_TELEMETERY
+//#undef SDK_TELEMETERY
 #define GET_DRIVERS
-#undef GET_DRIVERS
+//#undef GET_DRIVERS
 #define ON_ON_TRACK_EVENT
 #undef ON_ON_TRACK_EVENT
 
@@ -43,6 +43,7 @@ namespace iRacingSimulator
             _drivers = new List<Driver>();
             _sessionData = new SessionData();
             _mustUpdateSessionData = true;
+            _car = new Car();
 
             // Subcribed events
             _sdk.Connected += SdkOnConnected;
@@ -51,7 +52,7 @@ namespace iRacingSimulator
             _sdk.SessionInfoUpdated += SdkOnSessionInfoUpdated;
         }
 
-        Car _car = new Car();
+        
 
         public static Sim Instance
         {
@@ -105,6 +106,7 @@ namespace iRacingSimulator
         private Driver _driver = null;
 
         public Car Car { get { return _car; } }
+        private Car _car;
 
         /// <summary>
         /// The Leader is the Driver object

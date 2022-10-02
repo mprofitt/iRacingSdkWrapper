@@ -81,7 +81,6 @@ namespace iRacingSimulator.Cars
         /// </summary>
         public float Pressure { get; private set; }
 
-        private int currLap;
         private int prevLap;
 
         public void UpdateSessionInfo(SessionInfo info)
@@ -105,16 +104,17 @@ namespace iRacingSimulator.Cars
             Pressure = info.FuelPress.Value;
             LevelGal = info.FuelLevel.Value * 0.2641720524f;
 
-            currLap = info.LapCompleted.Value;
-            UpdateLapFuelUage(currLap);
+            UpdateLapFuelUsage(info.LapCompleted.Value);
             
         }
 
-        private void UpdateLapFuelUage(int lap)
+        private void UpdateLapFuelUsage(int currLap)
         {
             if(currLap != prevLap)
             {
-                LapUsage = LevelGal - prevLevelGal; 
+                LapUsage = LevelGal - prevLevelGal;
+                prevLap = currLap;
+                prevLevelGal = LevelGal;
             }
 
         }
